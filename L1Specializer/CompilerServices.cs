@@ -15,7 +15,7 @@ namespace L1Specializer
     internal class CompilerMessage
     {
 
-        #region Конструктор
+        #region Constructor
 
         public CompilerMessage(LexLocation location, string message)
         {
@@ -25,7 +25,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Свойства
+        #region Properties
 
         private LexLocation f_location;
 
@@ -45,7 +45,7 @@ namespace L1Specializer
 	
         #endregion
 
-        #region Методы Object
+        #region Object methods
 
         public override string ToString()
         {
@@ -60,18 +60,14 @@ namespace L1Specializer
     internal static class CompilerServices
     {
 
-        #region Поля
+        #region Fields
 
         private static List<CompilerMessage> f_errors = new List<CompilerMessage>();
         private static List<CompilerMessage> f_warnings = new List<CompilerMessage>();
 
         #endregion
 
-        #region Статический коструктор
-
-        #endregion
-
-        #region Инифиализация стандартных функций
+        #region Standard functions initialization
 
         private static VariableType GetVariableTypeByTypeId(L1Runtime.VariableTypeId typeId)
         {
@@ -131,7 +127,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Информация об ошибках
+		#region Error and warning information
 
         public static void AddWarning(LexLocation location, string message)
         {
@@ -149,7 +145,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Семантический анализ
+        #region Semantic analize
 
         public static bool IsAssignable(VariableType left, VariableType right)
         {
@@ -183,7 +179,7 @@ namespace L1Specializer
             {
                 CompilerServices.AddError(
                     location,
-                    "Не найден подходящий прототип функции под заданное имя и число параметров"
+                    "Can't find function prototype for specified function name and number of parameters"
                 );
                 return false;
             }
@@ -213,7 +209,7 @@ namespace L1Specializer
                 }
                 CompilerServices.AddError(
                     location,
-                    "Не найден подходящий протип функции под переданные параметры"
+                    "Can't find function prototype for specified parameters"
                 );
                 return false;
             }
@@ -257,7 +253,7 @@ namespace L1Specializer
             {
                 CompilerServices.AddError(
                     returnStatement.Location,
-                    "Тип возвращаемого значения не соотвествует прототипу функции"
+                    "Return type doesn't match function prototype"
                 );
                 return false;
             }
@@ -306,7 +302,7 @@ namespace L1Specializer
                 {
                     CompilerServices.AddError(
                         functionDef.Location,
-                        "Не все ветви выполнения возвращают значение"
+                        "Not all branches of execution return value"
                     );
                 }
             }
@@ -314,7 +310,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Свойсвта
+        #region Properties
 
         private static L1Program f_program = new L1Program();
 
@@ -336,7 +332,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Лексический анализ
+        #region Lexic analize
 
         public static int ParseInt(string str)
         {

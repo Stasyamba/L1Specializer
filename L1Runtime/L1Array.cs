@@ -8,14 +8,14 @@ namespace L1Runtime
     public class L1Array<T>
     {
 
-        #region Поля
+        #region Fields
 
         private T[] f_array;
         private bool f_isNull;
 
         #endregion
 
-        #region Конструктор
+        #region Constructors
 
         public L1Array(int size)
         {
@@ -27,7 +27,7 @@ namespace L1Runtime
 
         #endregion
 
-        #region Методы
+        #region Methods
 
         public int GetLength()
         {
@@ -59,7 +59,7 @@ namespace L1Runtime
 
         #endregion
 
-        #region Cтатические методы
+        #region Static methods
 
         private static L1Array<T> f_nullInstance = null;
 

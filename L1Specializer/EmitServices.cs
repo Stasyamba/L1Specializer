@@ -18,7 +18,7 @@ namespace L1Specializer
     internal static class EmitServices
     {
 
-        #region Методы генерации кода по дереву
+        #region Methods for code generation from syntax tree
 
         #region Expression
 
@@ -354,20 +354,20 @@ namespace L1Specializer
                 if (expr.LeftNode.OpType == OperationType.ArrayAccess)
                 {
                     Type arrayType = GetTypeForCompilerType(expr.LeftNode.LeftNode.ResultType);
-                    //Массив
+                    //Array
                     EmitExpression(expr.LeftNode.LeftNode, table, ilGen);
-                    //Индекс
+                    //Index
                     EmitExpression(expr.LeftNode.RightNode, table, ilGen);
-                    //Значение
+                    //Value
                     EmitExpression(expr.RightNode, table, ilGen);
-                    //Вызов сеттера
+                    //Setter call
                     ilGen.Emit(OpCodes.Call, GetArraySetter(arrayType));
-                    //Бандитизм: после вызова сеттера - на стеке значение, которое было ему передано
+                    //Banditism: after setter call - there is specified value on the stack's top
                 }
                 else if (expr.LeftNode.LeafType == ExpressionLeafType.VariableAccess)
                 {
                     Symbol symbol = table.FindSymbol(expr.LeftNode.Value.ToString());
-                    //Правая часть
+                    //Reight part
                     if (expr.RightNode.ResultType.TypeEnum == VariableTypeEnum.NULL)
                     {
                         ilGen.Emit(OpCodes.Call, GetArrayNullGetter(symbol.Type));
@@ -378,7 +378,7 @@ namespace L1Specializer
                         EmitExpression(expr.RightNode, table, ilGen);
                         ilGen.Emit(OpCodes.Dup);
                     }
-                    //Сеттер на переменную
+                    //Setter for variable
                     if (symbol.IsParameter)
                     {
                         ilGen.Emit(OpCodes.Starg, symbol.ParameterIndex);
@@ -411,7 +411,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Функция
+        #region Function
 
         public static void EmitFunction(FunctionDefinition fDef, SymbolTable table, ILGenerator ilGen)
         {
@@ -590,14 +590,14 @@ namespace L1Specializer
                     Label loopLabel = ilGen.DefineLabel();
                     Label endLabel = ilGen.DefineLabel();
 
-                    //Сохраняем в локальные переменные шаг и условие концацикла
+					//Save cycle step and end condition to local variables
                     EmitExpression(cycle.Step, table, ilGen);
                     ilGen.Emit(OpCodes.Stloc, step);
                     EmitExpression(cycle.EndValue, table, ilGen);
                     ilGen.Emit(OpCodes.Stloc, end);
 
-                    //Инициализируем переменную
-
+                    //Init variable
+					
                     if (cycle.DeclareVariable == String.Empty)
                     {
                         EmitExpression(cycle.Init, table, ilGen);
@@ -611,7 +611,7 @@ namespace L1Specializer
 
                     ilGen.MarkLabel(loopLabel);
 
-                    //Проверка выполнения условия цикла
+                    //Check for cycle' condition
 
                     if (cycleIndex.IsParameter)
                         ilGen.Emit(OpCodes.Ldarg, cycleIndex.ParameterIndex);
@@ -621,11 +621,11 @@ namespace L1Specializer
                     ilGen.Emit(OpCodes.Cgt);
                     ilGen.Emit(OpCodes.Brtrue, endLabel);
 
-                    //Тело цикла
+                    //Cycle body
 
                     EmitStatementList(cycle.Statements, newTable, ilGen);
 
-                    //Инкремент
+                    //Increment
 
                     if (cycleIndex.IsParameter)
                         ilGen.Emit(OpCodes.Ldarg, cycleIndex.ParameterIndex);
@@ -702,7 +702,7 @@ namespace L1Specializer
 
         #endregion
 
-        #region Методы (основные)
+        #region Methods (main)
 
         private static MethodInfo f_mainRuntimeMethod;
 
@@ -718,7 +718,7 @@ namespace L1Specializer
                 = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
             ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName + ".exe", assemblyName + ".exe");
 
-            //Метод Main
+            //Main method
 
             TypeBuilder mainTypeBuilder = moduleBuilder.DefineType("L1ProgramMain", TypeAttributes.Class | TypeAttributes.Public);
             MethodBuilder mainMethodBuilder = mainTypeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static);
@@ -729,7 +729,7 @@ namespace L1Specializer
             mainIlGenerator.Emit(OpCodes.Call, f_mainRuntimeMethod);
             mainIlGenerator.Emit(OpCodes.Ret);
 
-            //Методы программы
+            //Program methods
 
             TypeBuilder functionsTypeBuilder = moduleBuilder.DefineType("L1ProgramFunctions", TypeAttributes.Class | TypeAttributes.Public);
             List<MethodBuilder> functionBuilders = new List<MethodBuilder>();
@@ -790,9 +790,9 @@ namespace L1Specializer
 
         #endregion
 
-        #region Служебные методы
+        #region Support methods
 
-        #region Поддержка встроенных операторов
+        #region Support of built-in methods
 
         private static MethodInfo f_assert = null;
 
@@ -835,10 +835,10 @@ namespace L1Specializer
 
         #endregion
 
-        #region Поддержка типов
+        #region Type support
 
         /// <summary>
-        /// Получает рантаймовский тип для типа компилятора
+        /// Get runtime type for complirer's type
         /// </summary>
         public static Type GetTypeForCompilerType(VariableType compilerType)
         {
@@ -882,12 +882,12 @@ namespace L1Specializer
 
         #endregion
 
-        #region Поддержка массивов
+        #region Array support
 
         private static Dictionary<Type, MethodInfo> f_lenGetters = new Dictionary<Type, MethodInfo>();
 
         /// <summary>
-        /// Получает метод-геттер для массива
+        /// Get array length method
         /// </summary>
         public static MethodInfo GetArrayLengthGetter(Type arrayType)
         {
@@ -902,7 +902,7 @@ namespace L1Specializer
         private static Dictionary<Type, MethodInfo> f_getters = new Dictionary<Type, MethodInfo>();
 
         /// <summary>
-        /// Получает метод-геттер для массива
+        /// Get array getter method
         /// </summary>
         public static MethodInfo GetArrayGetter(Type arrayType)
         {
@@ -917,7 +917,7 @@ namespace L1Specializer
         private static Dictionary<Type, MethodInfo> f_setters = new Dictionary<Type, MethodInfo>();
 
         /// <summary>
-        /// Получает метод-сеттер для массива
+        /// Get array setter method
         /// </summary>
         public static MethodInfo GetArraySetter(Type arrayType)
         {
@@ -932,7 +932,7 @@ namespace L1Specializer
         public static Dictionary<Type, ConstructorInfo> f_ctors = new Dictionary<Type, ConstructorInfo>();
 
         /// <summary>
-        /// Получает метод-конструктор для массива
+        /// Get array constructor method
         /// </summary>
         public static ConstructorInfo GetArrayCtor(Type arrayType)
         {
@@ -947,9 +947,9 @@ namespace L1Specializer
         public static Dictionary<Type, MethodInfo> f_getNullMethods = new Dictionary<Type, MethodInfo>();
 
         /// <summary>
-        /// Возвращает метод для получения NULL-массива заданного типа
+        /// Get method for getting array null instance
         /// </summary>
-        /// <param name="arrayType"></param>
+        /// <param name="arrayType">Array runtime type</param>
         /// <returns></returns>
         public static MethodInfo GetArrayNullGetter(Type arrayType)
         {
@@ -961,11 +961,9 @@ namespace L1Specializer
             return mi;
         }
 
-
-
         #endregion
 
-        #region Поддержка функций
+        #region Function support
 
         private static Dictionary<FunctionHeader, MethodInfo> f_functions = new Dictionary<FunctionHeader, MethodInfo>();
 
@@ -978,11 +976,9 @@ namespace L1Specializer
         }
 
         /// <summary>
-        /// Возвращает метод, который соответсвует типам аругментов.
+        /// Get method for specified argument types
         /// </summary>
-        /// <param name="argumentTypes">Типы аругментов</param>
-        /// <param name="callLocation">Место вызова метода. Если будет найдено несколько подходящих методов, то
-        /// компилятор сгенерирует предупреждение</param>
+        /// <param name="argumentTypes">Argument types</param>
         public static MethodInfo GetMethodForFunctionNameAndArgumentTypes(
             string functionName, 
             VariableType[] argumentTypes, 
@@ -1051,7 +1047,7 @@ namespace L1Specializer
                 {
                     CompilerServices.AddWarning(
                         callLocation,
-                        "Неоднозначный вызов функции из-за переданных NULL в качестве аргументов"
+                        "Function ambiguous call becouse of NULL arguments"
                     );
                 }
                 return callCandidates[0];
@@ -1078,7 +1074,7 @@ namespace L1Specializer
             {
                 CompilerServices.AddWarning(
                     callLocation,
-                    "Неоднозначный вызов функции"
+                    "Function ambiguous call"
                 );
             }
 

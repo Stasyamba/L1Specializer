@@ -34,7 +34,7 @@ namespace L1Runtime.SyntaxTree
 
         #endregion
 
-        #region Конструкторы
+        #region Constructors
 
         public VariableType(VariableTypeEnum typeEnum)
         {
@@ -53,7 +53,7 @@ namespace L1Runtime.SyntaxTree
 
         #endregion
 
-        #region Свойства
+        #region Properties
 
         private VariableTypeEnum f_typeEnum;
 
