@@ -68,7 +68,7 @@
     <Compile Include="SyntaxTree\IfStatements\IfStatement.cs" />
     <Compile Include="Preprocessor\PreprocessorServices.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="scanner.cs" />
+    <Compile Include="Scanner.cs" />
     <Compile Include="CompilerServices.cs" />
     <Compile Include="EmitServices.cs" />
   </ItemGroup>

@@ -1,2 +1,4 @@
 _Debug/*
 L1Specializer.userprefs
+L1Specializer/*.lst
+*.pidb
