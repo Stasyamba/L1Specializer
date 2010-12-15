@@ -716,7 +716,7 @@ namespace L1Specializer
             AssemblyName assemblyName = new AssemblyName(name);
             AssemblyBuilder assemblyBuilder 
                 = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
-            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName + ".exe", assemblyName + ".exe");
+            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.ToString(), assemblyName + ".exe");
 
             //Main method
 
