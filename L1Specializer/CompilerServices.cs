@@ -49,7 +49,7 @@ namespace L1Specializer
 
         public override string ToString()
         {
-            return Location + " " + Message;
+			return String.Format("Line: {0} - {1}; {2}", Location.sLin, Location.eLin, Message); 
         }
 
         #endregion

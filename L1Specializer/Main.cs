@@ -107,16 +107,16 @@ namespace L1Specializer
 				return;
 			}
             Scanner scan = new Scanner(newFs);
-            Parser p = new Parser();
+            Parser p = new Parser(); 
             p.scanner = scan;
-            p.Trace = true;
-
+            //p.Trace = true;
+			
             CompilerServices.InitStdFunctions(CompilerServices.Program);
             bool b = p.Parse();
             if (!b)
             {
-				p.ReportError();
-                Console.WriteLine("Parse error");
+                Console.WriteLine("Parse error!");
+				Console.WriteLine("Line = " + scan.yylloc.eLin);
                 return;
             }
 
