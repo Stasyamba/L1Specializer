@@ -23,14 +23,14 @@ namespace L1Runtime.SyntaxTree
     public class VariableType : IEquatable<VariableType>
     {
         
-        #region Константы
+        #region Constants
 
         public static readonly VariableType IntType = new VariableType(VariableTypeEnum.Integer);
         public static readonly VariableType CharType = new VariableType(VariableTypeEnum.Char);
         public static readonly VariableType BoolType = new VariableType(VariableTypeEnum.Bool);
         public static readonly VariableType NullType = new VariableType(VariableTypeEnum.NULL);
 
-        public static readonly VariableType StrType = new VariableType(VariableTypeEnum.Array, VariableType.CharType);
+        public static readonly VariableType StrType = new VariableType(VariableTypeEnum.Array, VariableType.IntType);
 
         #endregion
 

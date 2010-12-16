@@ -27,24 +27,24 @@ namespace L1Runtime
             Console.WriteLine("UnknownErrorException");
         }
 
-        public static L1Array<char> GetArrayFromString(string str)
+        public static L1Array<int> GetArrayFromString(string str)
         {
-            L1Array<char> array = new L1Array<char>(str.Length);
+            L1Array<int> array = new L1Array<int>(str.Length);
             for (int i = 0; i < str.Length; ++i)
-                array.SetValue(i, str[i]);
+                array.SetValue(i, Convert.ToInt32(str[i]));
             return array;
         }
 
-        public static string GetStringFromArray(L1Array<char> str)
+        public static string GetStringFromArray(L1Array<int> str)
         {
             int length = str.GetLength();
             StringBuilder sb = new StringBuilder(length);
             for (int i = 0; i < length; ++i)
             {
-                char c = str.GetValue(i);
+                int c = str.GetValue(i);
                 if (c == (char)0)
                     break;
-                sb.Append(c);
+                sb.Append((char)c);
             }
             return sb.ToString();
         }
@@ -89,14 +89,14 @@ namespace L1Runtime
                     break;
             }
 
-            MethodInfo mi = program.GetMethod("Main", new Type[] { typeof(int), typeof(L1Array<L1Array<char>>) });
+            MethodInfo mi = program.GetMethod("Main", new Type[] { typeof(int), typeof(L1Array<L1Array<int>>) });
             if (mi == null)
             {
-                Console.WriteLine("Missing method: Main(int, char array array)");
+                Console.WriteLine("Missing method: Main(int, int array array)");
             }
             else
             {
-                L1Array<L1Array<char>> l1args = new L1Array<L1Array<char>>(args.Length);
+                L1Array<L1Array<int>> l1args = new L1Array<L1Array<int>>(args.Length);
                 for (int i = 0; i < args.Length; ++i)
                 { 
                     l1args.SetValue(i, GetArrayFromString(args[i]));

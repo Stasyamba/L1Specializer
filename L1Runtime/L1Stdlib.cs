@@ -12,42 +12,42 @@ namespace L1Runtime
         #region Built-in methods
 
         [Signature(VariableTypeId.Void, VariableTypeId.String)]
-        public static void WriteLn(L1Array<char> str)
+        public static void WriteLn(L1Array<int> str)
         {
             string s = L1Runtime.GetStringFromArray(str);
             Console.WriteLine(s);
         }
 
         [Signature(VariableTypeId.Void, VariableTypeId.String)]
-        public static void Write(L1Array<char> str)
+        public static void Write(L1Array<int> str)
         {
             string s = L1Runtime.GetStringFromArray(str);
             Console.Write(s);
         }
 
         [Signature(VariableTypeId.String, VariableTypeId.Int)]
-        public static L1Array<char> Str(int iVal)
+        public static L1Array<int> Str(int iVal)
         {
             string s = iVal.ToString();
             return L1Runtime.GetArrayFromString(s);
         }
 
-        [Signature(VariableTypeId.String, VariableTypeId.Char)]
-        public static L1Array<char> Str(char cVal)
-        {
-            string s = cVal.ToString();
-            return L1Runtime.GetArrayFromString(s);
-        }
+//        [Signature(VariableTypeId.String, VariableTypeId.Char)]
+//        public static L1Array<int> Str(char cVal)
+//        {
+//            string s = cVal.ToString();
+//            return L1Runtime.GetArrayFromString(s);
+//        }
 
         [Signature(VariableTypeId.String, VariableTypeId.Bool)]
-        public static L1Array<char> Str(bool bVal)
+        public static L1Array<int> Str(bool bVal)
         {
             string s = bVal.ToString();
             return L1Runtime.GetArrayFromString(s);
         }
 
         [Signature(VariableTypeId.String, VariableTypeId.String, VariableTypeId.String)]
-        public static L1Array<char> StrCat(L1Array<char> str1, L1Array<char> str2)
+        public static L1Array<int> StrCat(L1Array<int> str1, L1Array<int> str2)
         {
             string s1 = L1Runtime.GetStringFromArray(str1);
             string s2 = L1Runtime.GetStringFromArray(str2);

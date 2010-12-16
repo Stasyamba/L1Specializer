@@ -128,6 +128,15 @@ namespace L1Specializer.Metadata
         }
 
         #endregion
+		
+		#region Methods Override
+		
+		public override string ToString ()
+		{
+			return FunctionName;
+		}
+		
+		#endregion
 
 
     }

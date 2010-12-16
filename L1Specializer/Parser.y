@@ -110,15 +110,15 @@ primitive_type : INT
 				VariableType type = new VariableType(VariableTypeEnum.Integer);
 				$$.Tag = type;
             }
-               | CHAR
-            {
-				VariableType type = new VariableType(VariableTypeEnum.Char);
-				$$.Tag = type;
-            }
+ //              | CHAR
+ //           {
+ //				VariableType type = new VariableType(VariableTypeEnum.Char);
+ //				$$.Tag = type;
+ //           }
                | BOOL
             {
-				VariableType type = new VariableType(VariableTypeEnum.Bool);
-				$$.Tag = type;
+ 				VariableType type = new VariableType(VariableTypeEnum.Bool);
+ 				$$.Tag = type;
             }
 ;
 
@@ -464,8 +464,8 @@ expression : expression ASSIGN expression
 					expr.OpType = OperationType.None;
 					expr.IsLeaf = true;
 					expr.LeafType = ExpressionLeafType.Constant;
-					expr.CharValue = $1.cVal;
-					expr.ResultType = VariableType.CharType;
+					expr.IntValue = $1.iVal;
+					expr.ResultType = VariableType.IntType;
 					expr.Location = @$;
 					$$.Tag = expr;                 
                 }
@@ -509,7 +509,7 @@ expression : expression ASSIGN expression
 					expr.IsLeaf = true;
 					expr.LeafType = ExpressionLeafType.Constant;
 					expr.Value = $1.sVal;
-					expr.ResultType = new VariableType(VariableTypeEnum.Array, VariableType.CharType);
+					expr.ResultType = new VariableType(VariableTypeEnum.Array, VariableType.IntType);
 					expr.Location = @$;
 					$$.Tag = expr;     					 
                 }

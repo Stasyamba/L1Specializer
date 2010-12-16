@@ -71,6 +71,9 @@
     <Compile Include="Scanner.cs" />
     <Compile Include="CompilerServices.cs" />
     <Compile Include="EmitServices.cs" />
+    <Compile Include="InterpreterServices.cs" />
+    <Compile Include="Environment\RuntimeEnvironment.cs" />
+    <Compile Include="Environment\AbstractEnvironment.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -84,6 +87,7 @@
     <Folder Include="SyntaxTree\" />
     <Folder Include="SyntaxTree\IfStatements\" />
     <Folder Include="Preprocessor\" />
+    <Folder Include="Environment\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parser.y" />

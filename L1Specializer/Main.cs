@@ -109,7 +109,7 @@ namespace L1Specializer
             Scanner scan = new Scanner(newFs);
             Parser p = new Parser();
             p.scanner = scan;
-            //p.Trace = true;
+            p.Trace = true;
 
             CompilerServices.InitStdFunctions(CompilerServices.Program);
             bool b = p.Parse();
@@ -149,6 +149,7 @@ namespace L1Specializer
 					else if (Mode == ExecutionMode.Interpret)
 					{
 						Console.WriteLine("Inpterpretation =)");
+						
 					}
 					else if (Mode == ExecutionMode.Specialize)
 					{

@@ -76,7 +76,7 @@ namespace L1Specializer.Metadata
             if (ok)
                 f_definitions.Insert(0, definition);
         }
-
+		
         #endregion
 
     }

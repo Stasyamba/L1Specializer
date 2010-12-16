@@ -11,7 +11,7 @@ CHAR_S  [^"\n""\r\n""'"]
 
 "ArrayLength" return (int)Tokens.ARRAY_LENGTH;
 "int"		return (int)Tokens.INT;
-"char"		return (int)Tokens.CHAR;
+//"char"		return (int)Tokens.CHAR;
 "bool"		return (int)Tokens.BOOL;
 "array"		return (int)Tokens.ARRAY;
 "define"	return (int)Tokens.DEFINE;
@@ -62,19 +62,19 @@ CHAR_S  [^"\n""\r\n""'"]
     return (int)Tokens.STRING_LITERAL; 
 }
 "'"{CHAR_S}"'" {
-    yylval.cVal = Convert.ToChar(yytext.Substring(1, 1));
+    yylval.iVal = Convert.ToInt32(Convert.ToChar(yytext.Substring(1, 1)));
     return (int)Tokens.CHAR_LITERAL;
 }
 "#{"[0-9a-fA-F]+"}" {
-    yylval.cVal = CompilerServices.ParseCharFromCode(yytext);
+    yylval.iVal = Convert.ToInt32(CompilerServices.ParseCharFromCode(yytext));
     return (int)Tokens.CHAR_LITERAL;
 }
 "#"[A-Z0-9]+ {
-    yylval.cVal = CompilerServices.GetCharLiteral(yytext.Substring(1, yytext.Length - 1));
+    yylval.iVal = Convert.ToInt32(CompilerServices.GetCharLiteral(yytext.Substring(1, yytext.Length - 1)));
     return (int)Tokens.CHAR_LITERAL;
 }
 "''"  {
-    yylval.cVal = '\'';
+    yylval.iVal = Convert.ToInt32('\'');
     return (int)Tokens.CHAR_LITERAL;
 }
 ([A-Za-z]([A-Za-z0-9])*)+	{
