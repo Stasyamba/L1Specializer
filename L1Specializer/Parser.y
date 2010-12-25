@@ -23,7 +23,7 @@
 %token WHILE DO TO STEP IF THEN ELSE ELSIF
 %token INTEGER CHAR_LITERAL IDENTIFIER STRING_LITERAL
 %token NOT
-%token EOF LP RP LAP RAP LFP RFP SEMI COMMA ILLEGAL
+%token EOF LP RP LAP RAP LFP RFP SEMI COMMA GOTO PERIPERI ILLEGAL
 
 
 %right ASSIGN
@@ -207,6 +207,19 @@ statement : cycle_to
           | COMMA
             {
 				$$.Tag = Statement.Dummy;
+            }
+          | IDENTIFIER PERIPERI statement
+            {
+            	$$.Tag = $3.Tag;
+            	((Statement)$$.Tag).Location = @$;
+            	((Statement)$$.Tag).Label = $1.sVal;
+            }
+          | GOTO IDENTIFIER
+            {
+            	GotoStatement statement = new GotoStatement();
+            	statement.GoTo = $2.sVal;
+            	statement.Location = @$;
+            	$$.Tag = statement;
             }
 ;
 

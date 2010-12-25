@@ -295,7 +295,9 @@ namespace L1Specializer
                 }
 
                 f_currentFunction = functionDef;
-
+				
+				CheckForLabelsDuplicates(f_currentFunction.Statements);				
+				
                 ValidateStatementList(functionDef.Statements, table);
 
                 if (functionDef.Header.ReturnType != null && !HasReturn(functionDef.Statements))
@@ -309,6 +311,79 @@ namespace L1Specializer
         }
 
         #endregion
+		
+		#region Label support
+		
+		public static void CheckForLabelsDuplicates(StatementList statements)
+		{
+			if (statements == null)
+				return;
+			
+			foreach(Statement statement in statements)
+			{
+				if (!String.IsNullOrEmpty(statement.Label))
+					AddLabel(statement.Location, statement.Label);
+				
+				if (statement is WhileDoStatement)
+				{
+					CheckForLabelsDuplicates((statement as WhileDoStatement).Statements);
+				}
+				else if (statement is DoWhileStatement)
+				{
+					CheckForLabelsDuplicates((statement as DoWhileStatement).Statements);
+				}
+				else if (statement is CycleStatement)
+				{
+					CheckForLabelsDuplicates((statement as CycleStatement).Statements);
+				}
+				else if (statement is IfStatement)
+				{
+					IfStatement ifst = statement as IfStatement;
+					foreach (IfClause clause in ifst.Clauses)
+					{
+						CheckForLabelsDuplicates(clause.Statements);
+					}
+					CheckForLabelsDuplicates(ifst.AlternativeStatements);
+				}
+			}
+		}
+		
+		private static Dictionary<FunctionDefinition, List<string>> f_labels = new Dictionary<FunctionDefinition, List<string>>();
+		
+		public static void AddLabel(LexLocation location, string label)
+		{
+			if (!f_labels.ContainsKey(f_currentFunction))
+			{
+				f_labels.Add(f_currentFunction, new List<string>());
+			}
+			if (f_labels[f_currentFunction].Contains(label))
+			{
+				CompilerServices.AddError(location, "Label already exists!");
+			}
+			else
+			{
+				f_labels[f_currentFunction].Add(label);
+			}
+		}
+		
+		public static bool CheckLabel(string label)
+		{
+			return f_labels[f_currentFunction].Contains(label);
+		}
+		
+		public static List<string> GetAllLables(FunctionDefinition function)
+		{
+			if (f_labels.ContainsKey(function))
+			{
+				return f_labels[function];
+			}
+			else
+			{
+				return new List<string>();
+			}
+		}
+		
+		#endregion
 
         #region Properties
 

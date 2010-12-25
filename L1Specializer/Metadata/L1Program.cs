@@ -38,7 +38,7 @@ namespace L1Specializer.Metadata
             {
                 if (def.Header.FunctionName == definition.Header.FunctionName)
                 {
-                    if (def.Header.ReturnType != definition.Header.ReturnType)
+                    if (!def.Header.ReturnType.Equals(definition.Header.ReturnType))
                     {
                         CompilerServices.AddError(
                             definition.Location,

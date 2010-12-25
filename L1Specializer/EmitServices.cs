@@ -196,7 +196,9 @@ namespace L1Specializer
             if (expr.OpType == OperationType.UNot)
             {
                 EmitExpression(expr.LeftNode, table, ilGen);
-                ilGen.Emit(OpCodes.Not);
+                //ilGen.Emit(OpCodes.Not);
+				ilGen.Emit(OpCodes.Ldc_I4_0);
+                ilGen.Emit(OpCodes.Ceq);
             }
 
             #endregion
@@ -412,9 +414,18 @@ namespace L1Specializer
         #endregion
 
         #region Function
+		
+		private static Dictionary<string, Label> f_contextLabels;
 
         public static void EmitFunction(FunctionDefinition fDef, SymbolTable table, ILGenerator ilGen)
         {
+			List<string> labelNames = CompilerServices.GetAllLables(fDef);
+			f_contextLabels = new Dictionary<string, Label>();
+			foreach (string labelName in labelNames)
+			{
+				f_contextLabels.Add(labelName, ilGen.DefineLabel());
+			}
+			
             EmitStatementList(fDef.Statements, table, ilGen);
             if (fDef.Header.ReturnType == null)
                 ;
@@ -433,6 +444,25 @@ namespace L1Specializer
         {
             foreach (Statement statement in statements)
             {
+				
+				#region MarkLabel
+				
+				if (!String.IsNullOrEmpty(statement.Label))
+				{
+					ilGen.MarkLabel(f_contextLabels[statement.Label]);
+				}
+				
+				#endregion
+			
+				#region GoTo
+				
+				if (statement is GotoStatement)
+				{
+					ilGen.Emit(OpCodes.Br, f_contextLabels[(statement as GotoStatement).GoTo]);
+				}
+				
+				#endregion
+				
 
                 #region Expression
 

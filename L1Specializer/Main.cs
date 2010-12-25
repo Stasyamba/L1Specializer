@@ -95,6 +95,8 @@ namespace L1Specializer
 
         static void Main(string[] args)
         {
+			Tests.SpecializerTests.Run();
+			
 			AnalizeCommandLine(args);
 			Stream newFs = null;
 			try

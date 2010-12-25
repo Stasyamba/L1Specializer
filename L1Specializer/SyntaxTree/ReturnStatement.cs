@@ -18,13 +18,13 @@ namespace L1Specializer.SyntaxTree
             set { f_expression = value; }
         }
 
-        private LexLocation f_location;
-
-        public LexLocation Location
-        {
-            get { return f_location; }
-            set { f_location = value; }
-        }
+//        private LexLocation f_location;
+//
+//        public LexLocation Location
+//        {
+//            get { return f_location; }
+//            set { f_location = value; }
+//        }
 	
 
         #endregion

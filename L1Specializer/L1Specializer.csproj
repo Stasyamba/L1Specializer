@@ -72,8 +72,18 @@
     <Compile Include="CompilerServices.cs" />
     <Compile Include="EmitServices.cs" />
     <Compile Include="InterpreterServices.cs" />
-    <Compile Include="Environment\RuntimeEnvironment.cs" />
     <Compile Include="Environment\AbstractEnvironment.cs" />
+    <Compile Include="ILEmitServices.cs" />
+    <Compile Include="IL\ILInstuction.cs" />
+    <Compile Include="Environment\RuntimeEnvironment.cs" />
+    <Compile Include="IL\ILExpression.cs" />
+    <Compile Include="IL\ILReturn.cs" />
+    <Compile Include="IL\ILVariableDefinition.cs" />
+    <Compile Include="IL\ILBranch.cs" />
+    <Compile Include="SyntaxTree\GotoStatement.cs" />
+    <Compile Include="Tests\SpecializerTests.cs" />
+    <Compile Include="IL\ILFunction.cs" />
+    <Compile Include="IL\ILGoto.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -88,6 +98,8 @@
     <Folder Include="SyntaxTree\IfStatements\" />
     <Folder Include="Preprocessor\" />
     <Folder Include="Environment\" />
+    <Folder Include="IL\" />
+    <Folder Include="Tests\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parser.y" />

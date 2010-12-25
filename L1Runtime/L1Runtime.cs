@@ -161,6 +161,14 @@ namespace L1Runtime
 
     }
 
-
     #endregion
+	
+	#region Specializer specific
+	
+	public class DynamicResultAttribute : Attribute
+	{
+	}
+	
+	#endregion
+	
 }

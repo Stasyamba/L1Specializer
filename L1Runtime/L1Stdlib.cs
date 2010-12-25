@@ -10,14 +10,32 @@ namespace L1Runtime
     {
 
         #region Built-in methods
-
+		
+		[DynamicResult]
+        [Signature(VariableTypeId.Int)]
+        public static int ReadInt()
+        {
+            int v = Int32.Parse(Console.ReadLine());
+			return v;
+        }
+		
+		[DynamicResult]
+        [Signature(VariableTypeId.String)]
+        public static L1Array<int> ReadLn()
+        {
+            L1Array<int> result = L1Runtime.GetArrayFromString(Console.ReadLine());
+			return result;
+        }
+		
+		[DynamicResult]
         [Signature(VariableTypeId.Void, VariableTypeId.String)]
         public static void WriteLn(L1Array<int> str)
         {
             string s = L1Runtime.GetStringFromArray(str);
             Console.WriteLine(s);
         }
-
+		
+		[DynamicResult]
         [Signature(VariableTypeId.Void, VariableTypeId.String)]
         public static void Write(L1Array<int> str)
         {

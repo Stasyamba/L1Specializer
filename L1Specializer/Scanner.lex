@@ -53,6 +53,8 @@ CHAR_S  [^"\n""\r\n""'"]
 "]"			{ yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.RAP; }
 ";"         { yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.COMMA; }
 ","         { yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.SEMI; }
+":"         { yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.PERIPERI; }
+"goto"      { yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.GOTO; }
 "\""{STR_S}*"\"" {
 	yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol);
     yylval.sVal = yytext.Substring(1, yytext.Length - 2);
@@ -83,7 +85,7 @@ CHAR_S  [^"\n""\r\n""'"]
     yylval.iVal = Convert.ToInt32('\'');
     return (int)Tokens.CHAR_LITERAL;
 }
-([A-Za-z]([A-Za-z0-9])*)+	{
+(([_])*[A-Za-z]([A-Za-z0-9])*)+	{
 	yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol);
     yylval.sVal = yytext;
 	return (int)Tokens.IDENTIFIER;
