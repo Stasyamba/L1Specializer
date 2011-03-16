@@ -9,7 +9,7 @@ namespace L1Specializer.IL
 	
 		#region Constants
 		
-		public readonly int LineNotSet = Int16.MaxValue;
+		public static readonly int LineNotSet = Int16.MaxValue;
 		
 		#endregion
 		
@@ -40,7 +40,7 @@ namespace L1Specializer.IL
 		
 		#region Methods
 	
-		public abstract object Execute(ILMachineState state);
+		
 		
 		#endregion
 		

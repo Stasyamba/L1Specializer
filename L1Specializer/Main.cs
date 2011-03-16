@@ -135,6 +135,7 @@ namespace L1Specializer
 
                 if (CompilerServices.Errors.Count == 0)
                 {
+					Mode = Program.ExecutionMode.Specialize;
 					if (Mode == ExecutionMode.Compile)
 					{
                     	System.Reflection.Emit.AssemblyBuilder ab = EmitServices.GenerateAssembly(AssemblyName, program);
@@ -155,6 +156,9 @@ namespace L1Specializer
 					}
 					else if (Mode == ExecutionMode.Specialize)
 					{
+						var ilProgram = ILEmitServices.EmitProgram(program);
+						SpecializerServices.Specialize(ilProgram);
+						
 						Console.WriteLine("Specialization ;)");
 					}						
 				}

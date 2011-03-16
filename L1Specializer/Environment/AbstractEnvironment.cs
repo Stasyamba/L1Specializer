@@ -33,7 +33,12 @@ namespace L1Specializer
 		
 		#region Methods
 		
-		
+		public bool IsDynamic(string name) {
+			if (f_values.ContainsKey(name))
+				return f_values[name] == Dynamic.Value;
+			else
+				return false;	
+		}
 
 		public object GetValue(string name)
 		{
@@ -148,20 +153,142 @@ namespace L1Specializer
 			return true;
 		}
 		
+		private bool IsDefaultValue(object val) {
+			if (val == null)
+				return true;
+			if (val is Int32 && Convert.ToInt32(val) == 0)
+				return true;
+			if (val is Boolean && Convert.ToBoolean(val) == false)
+				return true;
+			
+			return false;
+		}
+		
 		public bool Equals (AbstractEnvironment other)
 		{
-			if (f_values.Keys.Count != other.f_values.Keys.Count)
-				return false;
-			foreach (var KV in f_values)
-			{
-				if (other.f_values.ContainsKey(KV.Key) == false)
-					return false;
-				bool eq = ValsEquals(KV.Value, other.f_values[KV.Key]);
-				if (!eq)
-					return false;
+			//New variant - undefined variables and definded with default value are equals
+			
+			foreach (var varName in this.f_values.Keys) {
+				if (other.f_values.ContainsKey(varName)) {
+					var eq = ValsEquals(this.f_values[varName], other.f_values[varName]);
+					if (!eq) return false;
+				}
+				else {
+					var isDefault = IsDefaultValue(this.f_values[varName]);
+					if (!isDefault) return false;
+				}
+			}
+			foreach (var varName in other.f_values.Keys) {
+				if (this.f_values.ContainsKey(varName) == false) {
+					var isDefault = IsDefaultValue(other.f_values[varName]);
+					if (!isDefault) return false;					
+				}
 			}
 			return true;
+			
+			//Old variant
+//			if (f_values.Keys.Count != other.f_values.Keys.Count)
+//				return false;
+//			foreach (var KV in f_values)
+//			{
+//				if (other.f_values.ContainsKey(KV.Key) == false)
+//					return false;
+//				bool eq = ValsEquals(KV.Value, other.f_values[KV.Key]);
+//				if (!eq)
+//					return false;
+//			}
+//			return true;
 		}
+		
+		#endregion
+		
+		#region Debug
+		
+		public override string ToString ()
+		{
+			var sb = new System.Text.StringBuilder();
+			foreach (var kvp in f_values) {
+				sb.Append(kvp.Key); sb.Append(" -> ");
+				if (kvp.Value == Dynamic.Value) {
+					sb.Append("D");
+				} else {
+					sb.Append("S");
+				}
+				sb.Append(System.Environment.NewLine);
+			}
+			return sb.ToString();
+		}
+		
+		public void Trace() {
+			System.Console.WriteLine(ToString());
+		}
+		
+		#endregion
+		
+		#region Fast compare
+		
+		private int f_hash = -1;
+		
+		public void Freeze() {
+			//TODO: Calculate complex hash
+			f_hash = -1;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return f_hash;
+		}
+		
+		
+		#endregion
+		
+		#region Clone
+		
+		public AbstractEnvironment Clone() {
+			var newEnv = new AbstractEnvironment();
+			
+			foreach (var kvp in this.f_values) {
+				if (kvp.Value is Array) {
+					var clonedArray = m_cloneArray(kvp.Value as Array);
+					newEnv.f_values.Add(kvp.Key, clonedArray);
+				}
+				else {
+					var cloned = m_cloneVal(kvp.Value);
+					newEnv.f_values.Add(kvp.Key, cloned);
+				}
+			}
+			return	newEnv;
+		}
+		
+		public object m_cloneVal(object val) {
+			if (val is Int32 || val is Boolean) {
+				var cloned = val;
+				return cloned;
+			}
+			else if (val == Dynamic.Value || val == null) {
+				return val;
+			}	
+			else
+				throw new InvalidOperationException("Bad val to clone in AbstactEnv!!!");
+		}
+		
+		public Array m_cloneArray(Array a) {
+			int size =  a.GetLength(0);
+			Array newArray = Array.CreateInstance(typeof(object), size);
+			for (int i = 0; i < size; ++i) {
+				object e = a.GetValue(i);
+				object cloned = null;
+				if (e is Array) {
+					cloned = m_cloneArray(e as Array);
+				}
+				else {
+					cloned = m_cloneVal(e);
+				}	
+				newArray.SetValue(cloned, i);
+			}
+			return newArray;
+		}
+		
 		
 		#endregion
 		

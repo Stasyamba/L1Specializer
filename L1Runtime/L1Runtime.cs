@@ -167,6 +167,11 @@ namespace L1Runtime
 	
 	public class DynamicResultAttribute : Attribute
 	{
+		public static bool IsDynamic(MethodInfo mi)
+		{
+			var a = Attribute.GetCustomAttribute(mi, typeof(DynamicResultAttribute));
+			return a != null;
+		}
 	}
 	
 	#endregion

@@ -28,15 +28,9 @@ namespace L1Specializer.IL
 		
 		#region Methods
 		
-		public override object Execute (ILMachineState state)
+		public override string ToString ()
 		{
-			//bool ok = (bool)this.Condition.Eval(state);
-			//if (ok)
-			//	state.InstructionLine = SuccessJump;
-			//else
-			//	state.InstructionLine = FailJump;
-			//return null;
-			return null;
+			return String.Format("if {0} then {1} else {2}", Condition, SuccessJump, FailJump);
 		}
 		
 		#endregion

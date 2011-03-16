@@ -156,7 +156,7 @@ namespace L1Specializer
 
             #endregion
 
-            #region **, *, /
+            #region **, *, /, mod
 
             if (expr.OpType == OperationType.Power)
             {
@@ -177,6 +177,12 @@ namespace L1Specializer
                 EmitExpression(expr.LeftNode, table, ilGen);
                 EmitExpression(expr.RightNode, table, ilGen);
                 ilGen.Emit(OpCodes.Div);
+            }
+			if (expr.OpType == OperationType.Mod)
+            {
+                EmitExpression(expr.LeftNode, table, ilGen);
+                EmitExpression(expr.RightNode, table, ilGen);
+                ilGen.Emit(OpCodes.Rem);
             }
 
             #endregion

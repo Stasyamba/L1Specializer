@@ -113,6 +113,7 @@ namespace L1Specializer
                     FunctionDefinition fdef = new FunctionDefinition();
                     fdef.Header = fh;
                     fdef.IsEmbedded = true;
+					fdef.Body = mi;
                     fdef.Location = new LexLocation();
                     fdef.Statements = new StatementList();
 

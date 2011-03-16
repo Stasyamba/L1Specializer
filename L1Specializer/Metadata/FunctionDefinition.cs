@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reflection;
 
 using gppg;
 using L1Specializer.SyntaxTree;
@@ -43,6 +44,11 @@ namespace L1Specializer.Metadata
             get { return f_isEmbedded; }
             set { f_isEmbedded = value; }
         }
+		
+		public MethodInfo Body {
+			get;
+			set;
+		}
 	
         #endregion
 

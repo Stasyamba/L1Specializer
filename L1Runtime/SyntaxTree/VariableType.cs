@@ -96,5 +96,34 @@ namespace L1Runtime.SyntaxTree
         }
 
         #endregion
+		
+		#region ToString
+		
+		public override string ToString ()
+		{
+			if (NestedType == null) {
+				return TypeEnum.ToString();
+			} else {
+				return NestedType.ToString() + " Array";
+			}
+		}
+		
+		public string ToCompileableString() {
+			if (NestedType == null) {
+				if (TypeEnum == VariableTypeEnum.Integer)
+					return "int";
+				else if (TypeEnum == VariableTypeEnum.Bool)
+					return "bool";
+				else if (TypeEnum == VariableTypeEnum.Char)
+					return "char";
+				else
+					return "<<unkonown>>";
+			} else {
+				return NestedType.ToString() + " array";
+			}			
+		}
+		
+		#endregion
+		
     }
 }

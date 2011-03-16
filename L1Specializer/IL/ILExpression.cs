@@ -1,5 +1,8 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
+
+using L1Runtime.SyntaxTree;
 
 using L1Specializer.Environment;
 
@@ -22,14 +25,19 @@ namespace L1Specializer.IL
 	#endregion
 	
 	
-	internal class ILExpression
+	internal class ILExpression : ILInstuction
 	{
 		public ILExpression ()
 		{
-		
+			ArrayTypeString = "";
 		}
 		
 		#region Properties
+		
+		public VariableType OriginalType {
+			get;
+			set;
+		}
 		
 		public ILExpressionType Type {
 			get;
@@ -62,14 +70,115 @@ namespace L1Specializer.IL
 			set;		
 		}
 		
+		public string ArrayTypeString {
+			get;
+			set;
+		}
+		
 		
 		#endregion
 		
 		#region Methods for specialization
 		
-		public object AbstactReduce(AbstractEnvironment state)
+		private string rc(object o) {
+			return SpecializerServices.RenderConst(o);
+		}
+		
+		//REDNER variable or it's value
+		private object v(AbstractEnvironment env, string vname) {
+			if (env.IsDynamic(vname))
+				return vname;
+			else
+				return rc(env.GetValue(vname));
+		}
+		
+		//Reduce RIGHT part of il_expression
+		public object AbstactReduce(string leftVariable, AbstractEnvironment state, Dictionary<string, VariableType> localTypeScope)
 		{
-			return null;
+			if (Type == ILExpressionType.Const) {
+				if (Const is string) {
+					var s = (string)Const;
+					var a = new object[s.Length];
+					for (int i = 0; i < s.Length; ++i) {
+						a[i] = (int)s[i];
+					}
+					return a;
+				}
+				return Const;
+			}
+			//Only variable
+			else if (Type == ILExpressionType.VariableAccess) {
+			
+				if (state.IsDynamic(Const.ToString()))
+				    return Const.ToString();
+				else
+				    return state.GetValue(Const.ToString());
+			}
+			else if (Type == ILExpressionType.Alloc) {
+				bool isDynamicLeftPart = state.IsDynamic(leftVariable);
+				if (isDynamicLeftPart || state.IsDynamic(LeftNode.Const.ToString())) {
+					return "new " + localTypeScope[leftVariable].NestedType.ToCompileableString() + "[" + v(state, LeftNode.Const.ToString()) + "]";
+				}
+				else
+				{
+					int arraySize = (int)state.GetValue(LeftNode.Const.ToString());
+					var a = new object[arraySize];
+					object defElem = null;
+					if (localTypeScope[leftVariable].NestedType.TypeEnum == VariableTypeEnum.Integer) {
+						defElem = 0;
+					}
+					if (localTypeScope[leftVariable].NestedType.TypeEnum == VariableTypeEnum.Bool) {
+						defElem = false;
+					}
+					for (int i = 0; i < arraySize; ++i) {
+					    a[i] = defElem;
+					}
+					return a;
+				}
+			}
+			else if (Type == ILExpressionType.FunctionCall) {
+				return this;
+			}
+			//Binary expression & unary
+			else {
+				object r = Eval(state);
+				if (r == Dynamic.Value)
+					return GetOp(LeftNode.Const.ToString(), RightNode.Const.ToString(), Type, state);
+				else
+					return r;
+			}
+		}
+		
+		private string GetOp(string arg1, string arg2, ILExpressionType type, AbstractEnvironment env) {
+			if (type == ILExpressionType.ArrayLength) {
+				return "ArrayLength(" + arg1 + ")";
+			}
+			if (type == ILExpressionType.Unot) {
+				return "not " + arg1;
+			}
+			if (type == ILExpressionType.Uminus) {
+				return "-" + arg1;
+			}
+			if (type == ILExpressionType.ArrayAccess) {
+				return v(env, arg1) + "[" + v(env, arg2) + "]";
+			}
+			
+			string op = "<<unknown_binary_op>>";
+			if (type == ILExpressionType.Plus) op = " + ";
+			if (type == ILExpressionType.Minus) op = " - ";
+			if (type == ILExpressionType.Mul) op = " * ";
+			if (type == ILExpressionType.Div) op = " / ";
+			if (type == ILExpressionType.Pow) op = " ** ";
+			if (type == ILExpressionType.Mod) op = " mod ";
+			if (type == ILExpressionType.Gr) op = " > ";
+			if (type == ILExpressionType.Greq) op = " >= ";
+			if (type == ILExpressionType.Le) op = " < ";
+			if (type == ILExpressionType.Leeq) op = " <= ";
+			if (type == ILExpressionType.Eq) op = " = ";
+			if (type == ILExpressionType.NotEq) op = " <> ";
+			if (type == ILExpressionType.Xor) op = " xor ";
+			
+			return v(env, arg1) + op + v(env, arg2);
 		}
 		
 		#endregion
@@ -79,7 +188,7 @@ namespace L1Specializer.IL
 		public object Eval(AbstractEnvironment state)
 		{
 			
-			#region +, -, *, /, mod
+			#region +, -, *, /, mod, pow
 			
 			if (Type == ILExpressionType.Plus)
 			{
@@ -123,6 +232,15 @@ namespace L1Specializer.IL
 				object right = RightNode.Eval(state);
 				if (left != Dynamic.Value && right != Dynamic.Value)
 					return (int)left % (int)right;
+				else
+					return Dynamic.Value;
+			}
+			if (Type == ILExpressionType.Pow)
+			{
+				object left = LeftNode.Eval(state);
+				object right = RightNode.Eval(state);
+				if (left != Dynamic.Value && right != Dynamic.Value)
+					return L1Runtime.L1Runtime.Deg((int)left, (int)right);
 				else
 					return Dynamic.Value;
 			}
@@ -269,6 +387,14 @@ namespace L1Specializer.IL
 			}
 			if (Type == ILExpressionType.Const)
 			{
+				if (Const is string) {
+					var s = (string)Const;
+					var a = new object[s.Length];
+					for (int i = 0; i < s.Length; ++i) {
+						a[i] = (int)s[i];
+					}
+					return a;
+				}
 				return Const;
 			}
 			
@@ -333,6 +459,161 @@ namespace L1Specializer.IL
 			
 			throw new InvalidOperationException("Bad interpreter error! =(");
 			
+		}
+		
+		#endregion
+		
+		#region Object Override
+		
+		public override string ToString ()
+		{
+			var sb = new StringBuilder();
+			sb.Append("(");
+			
+			if (Type == ILExpressionType.Plus)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" + ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.Minus)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" - ");
+				sb.Append(RightNode.ToString());				
+			}
+			if (Type == ILExpressionType.Mul)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" * ");
+				sb.Append(RightNode.ToString());				
+			}
+			if (Type == ILExpressionType.Div)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" / ");
+				sb.Append(RightNode.ToString());				
+			}
+			if (Type == ILExpressionType.Mod)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" mod ");
+				sb.Append(RightNode.ToString());				
+			}		
+			if (Type == ILExpressionType.Pow)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" ** ");
+				sb.Append(RightNode.ToString());				
+			}	
+			if (Type == ILExpressionType.Gr)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" > ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.Greq)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" >= ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.Le)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" < ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.Leeq)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" <= ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.Eq)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" = ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.NotEq)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" <> ");
+				sb.Append(RightNode.ToString());
+			}
+			if (Type == ILExpressionType.Xor)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" xor ");
+				sb.Append(RightNode.ToString());
+			}
+			
+			if (Type == ILExpressionType.Alloc)
+			{
+				sb.Append("new ");
+				sb.Append(ArrayTypeString);
+				sb.Append("[");
+				sb.Append(LeftNode.ToString());
+				sb.Append("]");
+			}
+			if (Type == ILExpressionType.ArrayAccess)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(ArrayTypeString);
+				sb.Append("[");
+				sb.Append(RightNode.ToString());
+				sb.Append("]");
+			}
+			if (Type == ILExpressionType.ArrayLength)
+			{
+				sb.Append("ArrayLength");
+				sb.Append(LeftNode.ToString());
+			}
+			if (Type == ILExpressionType.FunctionCall)
+			{
+				sb.Append(Const.ToString());
+				sb.Append("(");
+				sb.Append(String.Join(", ", VAList.ConvertAll<string>(e => e.ToString())));
+				sb.Append(")");
+			}
+			if (Type == ILExpressionType.VariableAccess)
+			{
+				sb.Append(Const.ToString());
+			}
+			if (Type == ILExpressionType.Const)
+			{
+				if (Const != null) {
+					if (Const is Int32 || Const is Boolean) {
+						sb.Append(Const.ToString());
+					} else {
+						sb.Append("\"");
+						sb.Append(Const.ToString());
+						sb.Append("\"");
+					}
+				}
+				else
+					sb.Append("null");
+			}
+			if (Type == ILExpressionType.Uminus)
+			{
+				sb.Append("-");
+				sb.Append(LeftNode.ToString());
+			}
+			if (Type == ILExpressionType.Unot)
+			{
+				sb.Append("not");
+				sb.Append(LeftNode.ToString());
+			}
+			if (Type == ILExpressionType.Assign)
+			{
+				sb.Append(LeftNode.ToString());
+				sb.Append(" := ");
+				sb.Append(RightNode.ToString());				
+			}
+			
+			sb.Append(")");
+			return sb.ToString();
 		}
 		
 		#endregion

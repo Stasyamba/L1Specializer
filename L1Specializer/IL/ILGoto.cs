@@ -1,20 +1,32 @@
 using System;
 namespace L1Specializer.IL
 {
-	[Obsolete]
-	internal class ILAssignment : ILInstuction
+	internal class ILGoto : ILInstuction
 	{
+		
+		#region Constructor
 
-		public ILAssignment ()
+		public ILGoto (int gotoLabel)
 		{
+			this.GoTo = gotoLabel;
 		}
 		
+		#endregion
 		
-		#region implemented abstract members of L1Specializer.IL.ILInstuction
+		#region Properties
 		
-		public override object Execute (ILMachineState state)
+		public int GoTo {
+			get;
+			set;
+		}
+		
+		#endregion
+		
+		#region Methods
+		
+		public override string ToString ()
 		{
-			throw new System.NotImplementedException();
+			return String.Format("goto {0}", GoTo);
 		}
 		
 		#endregion
