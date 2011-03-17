@@ -200,6 +200,16 @@ namespace L1Specializer
 //			return true;
 		}
 		
+		public static List<string> GetDifference(AbstractEnvironment env1, AbstractEnvironment env2) {
+			var r = new List<string>();
+			foreach (var k in env1.f_values.Keys) {
+				if (!ValsEquals(env1.GetValue(k), env2.GetValue(k))) {
+					r.Add(k);
+				}
+			}
+			return r;
+		}
+		
 		#endregion
 		
 		#region Debug

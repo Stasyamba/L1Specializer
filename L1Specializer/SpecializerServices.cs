@@ -45,6 +45,41 @@ namespace L1Specializer
 			}
 			return null;
 		}
+		
+		public List<string> GetMostChangeableVariables() {
+			var r = new List<string>();
+			var stats = new Dictionary<string, int>();
+			
+			foreach (var kvp in f_container) {
+				AbstractEnvironment prev = null;
+				foreach (var env in kvp.Value) {
+					if (prev == null) {
+						prev = env.Env;
+						continue;
+					}
+					
+					var diff = AbstractEnvironment.GetDifference(env.Env, prev);
+					foreach (var d in diff) {
+						if (stats.ContainsKey(d) == false)
+							stats.Add(d, 1);
+						else
+							stats[d]++;
+					}
+				}
+			}
+			
+			int max = Int32.MinValue;
+			foreach (var s in stats.Values) {
+				max = Math.Max(s, max);
+			}
+			foreach (var kvp in stats) {
+				if (kvp.Value == max)
+					r.Add(kvp.Key);
+			}
+			
+			return r;
+		}
+		
 	}
 	
 	#region Resolving function calls
@@ -261,6 +296,15 @@ namespace L1Specializer
 	public static class SpecializerServices
 	{
 		
+		#region Settings
+		
+		public static int MaximimOperations {
+			get;
+			set;
+		}
+		
+		#endregion
+		
 		#region Helpers
 		
 		
@@ -422,7 +466,7 @@ namespace L1Specializer
 		                                                               ILFunction function, 
 		                                                               Dictionary<string, object> pars, 
 		                                                               List<string> forceDynamic) {
-			var source = new StringBuilder();
+			var source = new StringBuilder(1024 * 1024);
 			int LabelId = 1;
 			
 			var visited = new SpecPointContainer();
@@ -443,6 +487,9 @@ namespace L1Specializer
 				if (kvp.Value.TypeEnum == L1Runtime.SyntaxTree.VariableTypeEnum.Char)
 					val = (char)0;
 				initEnv.SetValue(kvp.Key, val);
+			}
+			foreach (var d in forceDynamic) {
+				initEnv.SetValue(d, Dynamic.Value);
 			}
 			
 			
@@ -482,8 +529,11 @@ namespace L1Specializer
 			initialSp.Env.Freeze();
 			visited.AddSpecPoint(initialSp);
 			
+			int operations = 0;
 			var calls = new List<FunctionCallContainer>();
 			while (q.Count != 0) {
+				operations++;
+				
 				var sp = q.Dequeue();
 				var env = sp.Env.Clone();
 				
@@ -566,6 +616,13 @@ namespace L1Specializer
 				
 				//TODO: Stop if too big query and try with more dynamic variables
 				
+				if (operations >= MaximimOperations) {	
+					var ch = visited.GetMostChangeableVariables();
+					forceDynamic = forceDynamic.Union(ch).ToList();
+					
+					var res1 = SpecializeFunction(function, pars, forceDynamic);
+					return res1;
+				}
 			}
 			source.Append("0").AppendLine();
 			

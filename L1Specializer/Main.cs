@@ -53,6 +53,7 @@ namespace L1Specializer
 		
 		static void AnalizeCommandLine(string[] args)
 		{
+			SpecializerServices.MaximimOperations = 5000;
 			foreach (string arg in args)
 			{
 				if (arg == "-c")
