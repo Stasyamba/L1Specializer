@@ -41,6 +41,11 @@ namespace L1Specializer.IL
 			set;
 		}
 		
+		public VariableType ReturnType {
+			get;
+			set;
+		}
+		
 		public List<ILInstuction> Body {
 			get;
 			set;
@@ -102,16 +107,17 @@ namespace L1Specializer.IL
 				env.SetValue(Parameters[i], arguments[i]);
 			}
 			
-			int PC = 0;
-			ILInstuction curr = Body[0];			
+			int PC = 1;
+			var curr = Body[0];			
 			while (curr is ILReturn == false)
 			{
+				curr = Body[PC - 1];
 				if (curr is ILExpression)
 				{
 					object r = (curr as ILExpression).Eval(env);
 					if (r == Dynamic.Value)
 						throw new InvalidOperationException("Interpreter bad error: try to calculate dynamic function");
-					curr = FindInstruction(curr.Line + 1);
+					PC++;
 				}
 				else if (curr is ILBranch)
 				{
@@ -120,15 +126,14 @@ namespace L1Specializer.IL
 						throw new InvalidOperationException("Interpreter bad error: try to calculate dynamic function");
 					bool br = (bool)r;
 					if (br)
-						curr = FindInstruction((curr as ILBranch).SuccessJump);
+						PC = (curr as ILBranch).SuccessJump;
 					else
-						curr = FindInstruction((curr as ILBranch).FailJump);
+						PC = (curr as ILBranch).FailJump;
 				}
 				else if (curr is ILGoto)
 				{
-					curr = FindInstruction((curr as ILGoto).GoTo);
+					PC = (curr as ILGoto).GoTo;
 				}
-				PC++;
 			}
 			object result = (curr as ILReturn).Return.Eval(env);
 			if (result == Dynamic.Value)

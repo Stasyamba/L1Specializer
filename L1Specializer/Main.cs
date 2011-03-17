@@ -78,7 +78,7 @@ namespace L1Specializer
 			{
 				if (InputFileName.Contains("."))
 				{
-					OutFileName = InputFileName.Substring(0, InputFileName.LastIndexOf(".")) + ((Mode == Program.ExecutionMode.Specialize) ? ".l1" : ".exe");
+					OutFileName = InputFileName.Substring(0, InputFileName.LastIndexOf(".")) + ((Mode == Program.ExecutionMode.Specialize) ? ".spec.l1" : ".exe");
 					AssemblyName = InputFileName.Substring(0, InputFileName.LastIndexOf("."));
 				}
 				else
@@ -135,7 +135,7 @@ namespace L1Specializer
 
                 if (CompilerServices.Errors.Count == 0)
                 {
-					Mode = Program.ExecutionMode.Specialize;
+					//Mode = Program.ExecutionMode.Specialize;
 					if (Mode == ExecutionMode.Compile)
 					{
                     	System.Reflection.Emit.AssemblyBuilder ab = EmitServices.GenerateAssembly(AssemblyName, program);
@@ -157,9 +157,18 @@ namespace L1Specializer
 					else if (Mode == ExecutionMode.Specialize)
 					{
 						var ilProgram = ILEmitServices.EmitProgram(program);
-						SpecializerServices.Specialize(ilProgram);
+						var outProgramSource = SpecializerServices.Specialize(ilProgram);
 						
-						Console.WriteLine("Specialization ;)");
+						try
+						{
+                    		System.IO.File.WriteAllText(OutFileName, outProgramSource.ToString());
+						}
+						catch
+						{
+							Console.WriteLine("Can't open file for writing! File name = " + OutFileName);
+							return;
+						}
+						//Console.WriteLine("Specialization ;)");
 					}						
 				}
             }

@@ -49,6 +49,18 @@ namespace L1Runtime
             string s = iVal.ToString();
             return L1Runtime.GetArrayFromString(s);
         }
+		
+		[Signature(VariableTypeId.Int, VariableTypeId.Int, VariableTypeId.Int)]
+        public static int TestSum(int a1, int a2)
+        {
+            return a1 + a2;
+        }
+		
+		[Signature(VariableTypeId.Bool, VariableTypeId.Bool, VariableTypeId.Bool)]
+        public static bool TestAnd(bool a, bool b)
+        {
+            return  a && b;
+        }
 
 //        [Signature(VariableTypeId.String, VariableTypeId.Char)]
 //        public static L1Array<int> Str(char cVal)

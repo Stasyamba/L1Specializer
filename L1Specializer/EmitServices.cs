@@ -1037,6 +1037,7 @@ namespace L1Specializer
                         if (p.Type.Equals(argumentTypes[i]) ||
                             (p.Type.TypeEnum == VariableTypeEnum.Array && argumentTypes[i].TypeEnum == VariableTypeEnum.NULL))
                         {
+							i++;
                             continue;
                         }
                         else
@@ -1060,6 +1061,7 @@ namespace L1Specializer
                                 {
                                     umCount++;
                                 }
+								i++;
                                 continue;
                             }
                             else

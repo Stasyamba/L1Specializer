@@ -34,6 +34,13 @@ namespace L1Runtime
                 array.SetValue(i, Convert.ToInt32(str[i]));
             return array;
         }
+		
+		public static L1Array<int> GetArrayFromObjectArray(object[] a) {
+			L1Array<int> array = new L1Array<int>(a.Length);
+            for (int i = 0; i < a.Length; ++i)
+                array.SetValue(i, Convert.ToInt32(a[i]));	
+			return array;
+		}
 
         public static string GetStringFromArray(L1Array<int> str)
         {

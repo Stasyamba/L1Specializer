@@ -143,7 +143,7 @@ namespace L1Specializer.IL
 			else {
 				object r = Eval(state);
 				if (r == Dynamic.Value)
-					return GetOp(LeftNode.Const.ToString(), RightNode.Const.ToString(), Type, state);
+					return GetOp(LeftNode.Const.ToString(), (RightNode != null) ? RightNode.Const.ToString() : "", Type, state);
 				else
 					return r;
 			}

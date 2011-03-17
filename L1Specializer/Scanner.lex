@@ -85,7 +85,7 @@ CHAR_S  [^"\n""\r\n""'"]
     yylval.iVal = Convert.ToInt32('\'');
     return (int)Tokens.CHAR_LITERAL;
 }
-(([_])*[A-Za-z]([A-Za-z0-9])*)+	{
+([A-Za-z_]([A-Za-z0-9_])*)+	{
 	yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol);
     yylval.sVal = yytext;
 	return (int)Tokens.IDENTIFIER;
@@ -102,7 +102,7 @@ CHAR_S  [^"\n""\r\n""'"]
 }
 (" "|\t|\n|\r\n)* ;
 			
-.           { yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.ILLEGAL; }
+.           { Console.WriteLine("Bad char, " + yytext); yylloc = new LexLocation(tokLin,tokCol,tokELin,tokECol); return (int)Tokens.ILLEGAL; }
 
 
 %%

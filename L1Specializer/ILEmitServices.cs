@@ -60,6 +60,7 @@ namespace L1Specializer
 			foreach (var fDef in program.Functions)
 			{
 				ILFunction ilFun = new ILFunction();
+				ilFun.ReturnType = fDef.Header.ReturnType;
 				if (fDef.Header.ReturnType == null) {
 					ilFun.IsVoidReturn = true;
 				}

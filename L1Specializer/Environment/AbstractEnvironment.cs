@@ -100,7 +100,7 @@ namespace L1Specializer
 		
 		#region IEquatable[AbstractEnvironment] 
 		
-		private bool ValsEquals(object v1, object v2)
+		public static bool ValsEquals(object v1, object v2)
 		{
 			if (v1 == null || v2 == null)
 			{
@@ -132,10 +132,10 @@ namespace L1Specializer
 					return true;
 				return false;
 			}
-			throw new InvalidOperationException("Something bad occured in specializer =(");
+			throw new InvalidOperationException("Something bad occured in specializer (ValsEquals) =(");
 		}
 		
-		private bool ArrayEquals(Array a1, Array a2)
+		private static bool ArrayEquals(Array a1, Array a2)
 		{
 			int L1 = a1.GetLength(0);
 			int L2 = a2.GetLength(0);
@@ -237,6 +237,10 @@ namespace L1Specializer
 		public override int GetHashCode ()
 		{
 			return f_hash;
+		}
+		
+		public static int GetHashCode(Dictionary<string, object> collection) {
+			return -1;
 		}
 		
 		

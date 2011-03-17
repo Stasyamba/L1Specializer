@@ -201,6 +201,7 @@ namespace L1Specializer
                     {
                         if (!IsAssignable(parameter.Type, args[i].ResultType))
                             match = false;
+						i++;
                     }
                     if (match)
                     {

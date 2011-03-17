@@ -94,6 +94,11 @@ namespace L1Runtime.SyntaxTree
             else
                 return (TypeEnum == other.TypeEnum);
         }
+		
+		public override int GetHashCode ()
+		{
+			return ToCompileableString().GetHashCode();
+		}
 
         #endregion
 		
@@ -119,7 +124,7 @@ namespace L1Runtime.SyntaxTree
 				else
 					return "<<unkonown>>";
 			} else {
-				return NestedType.ToString() + " array";
+				return NestedType.ToCompileableString() + " array";
 			}			
 		}
 		
