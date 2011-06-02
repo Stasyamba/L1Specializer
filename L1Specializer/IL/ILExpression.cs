@@ -446,12 +446,19 @@ namespace L1Specializer.IL
 			{
 				string functionName = (string)Const;
 				
+				var args = new List<object>();
+				bool isDynamic = false;
 				foreach (ILExpression expr in VAList)
 				{
-					expr.Eval(state);
+					object arg = expr.Eval(state);
+					args.Add(arg);
+					if (arg == Dynamic.Value) 
+						isDynamic = true;
 				}
-				
-				return Dynamic.Value;
+				if (isDynamic)
+					return Dynamic.Value;
+				else
+					return Function.Call(args.ToArray());;
 			}
 			
 			

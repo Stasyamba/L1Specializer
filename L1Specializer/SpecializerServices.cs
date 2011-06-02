@@ -373,6 +373,7 @@ namespace L1Specializer
 			
 			var resultProgram = new StringBuilder(1024*1024);
 			while (q.Count != 0) {
+ 
 				var spec = q.Dequeue();
 				
 				var cache = nr.GetSpecializedFunctionInfo(spec.Function.Name, spec.SpecializationRules);
@@ -444,10 +445,16 @@ namespace L1Specializer
 						}
 						k++;
 					}
-					functionCallString.Append(");").AppendLine();
+					functionCallString.Append(");");
 
 					spec.Source.Replace(fcall.ToString(), functionCallString.ToString());
 				}
+				
+				//Postprocess
+				
+				spec.Source = PostprocessingServices.RemoveDummyVariables(spec.Source);
+				
+				//Append source
 				
 				resultProgram.Append(spec.Source);
 				
@@ -506,9 +513,9 @@ namespace L1Specializer
 				}
 			}
 			foreach (var kvp in localVarsInfo) {
-				source.Append(kvp.Key.ToCompileableString()); source.Append(" ");
+				source.Append("\t"); source.Append(kvp.Key.ToCompileableString()); source.Append(" ");
 				for (int i = 0; i < kvp.Value.Count; ++i) {
-					source.Append("\t"); source.Append(kvp.Value[i]);
+					source.Append(kvp.Value[i]);
 					if (i != kvp.Value.Count - 1)
 						source.Append(", ");
 				}
@@ -517,7 +524,11 @@ namespace L1Specializer
 			
 			foreach (var kvp in pars) {
 				if (kvp.Value != Dynamic.Value && initEnv.IsDynamic(kvp.Key)) {
-					source.Append("\t"); source.Append(kvp.Key); source.Append(" := "); source.Append(RenderConst(kvp.Value));
+					source.Append("\t"); 
+					source.Append(function.LocalTypes[kvp.Key].ToCompileableString());
+					source.Append(" ");
+					source.Append(kvp.Key); source.Append(" := "); source.Append(RenderConst(kvp.Value));
+					source.Append(";"); source.AppendLine();
 				}
 			}
 			
@@ -573,11 +584,11 @@ namespace L1Specializer
 								visited.AddSpecPoint(failSp);
 							}
 							
-							source.Append("\tif "); source.Append(condVar); source.Append(" then"); source.Append(System.Environment.NewLine);
-							source.Append("\t\tgoto "); source.Append("L_"); source.Append(succSp.L); source.Append(System.Environment.NewLine);
-							source.Append("\telse"); source.Append(System.Environment.NewLine);
-							source.Append("\t\tgoto "); source.Append("L_"); source.Append(failSp.L); source.Append(System.Environment.NewLine);
-							source.Append("\tend; "); source.Append(System.Environment.NewLine);
+							source.Append("\tif "); source.Append(condVar); source.Append(" then "); 
+							source.Append("goto "); source.Append("L_"); source.Append(succSp.L);
+							source.Append(" else ");
+							source.Append("goto "); source.Append("L_"); source.Append(failSp.L); 
+							source.Append(" end;"); source.Append(System.Environment.NewLine);
 							
 							stopped = true;
 						}

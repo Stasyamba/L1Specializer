@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
 
 using L1Runtime.SyntaxTree;
 
@@ -10,6 +11,14 @@ namespace L1Runtime
     {
 
         #region Built-in methods
+		
+		[DynamicResult]
+		[Signature(VariableTypeId.Int)]
+		public static int GetCurrentTime()
+		{
+			long result = (DateTime.Now.Ticks / 10000) % 1000000000;
+			return (int)result;
+		}
 		
 		[DynamicResult]
         [Signature(VariableTypeId.Int)]
@@ -42,6 +51,12 @@ namespace L1Runtime
             string s = L1Runtime.GetStringFromArray(str);
             Console.Write(s);
         }
+		
+		[DynamicResult]
+		[Signature(VariableTypeId.Int)]
+		public static int D_0() {
+			return 0;
+		}
 
         [Signature(VariableTypeId.String, VariableTypeId.Int)]
         public static L1Array<int> Str(int iVal)

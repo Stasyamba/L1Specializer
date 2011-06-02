@@ -87,6 +87,7 @@
     <Compile Include="IL\ILGoto.cs" />
     <Compile Include="IL\ILDummy.cs" />
     <Compile Include="SpecializerServices.cs" />
+    <Compile Include="PostprocessingServices.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
