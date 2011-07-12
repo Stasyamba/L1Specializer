@@ -24,7 +24,8 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeBuild" command="mono gplex.exe Scanner.lex" workingdir="${ProjectDir}" />
-        <Command type="BeforeBuild" command="mono gppg.exe /gplex /no-lines Parser.y &gt; Parser.cs" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="mono gppg.exe /gplex /no-lines L1Parser.y &gt; L1Parser.cs" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="mono ../gppg.exe /gplex /no-lines L1ExpressionParser.y &gt; L1ExpressionParser.cs" workingdir="${ProjectDir}/Postprocessor" />
       </CustomCommands>
     </CustomCommands>
     <Commandlineparameters>-s</Commandlineparameters>
@@ -69,7 +70,6 @@
     <Compile Include="SyntaxTree\IfStatements\IfClauseList.cs" />
     <Compile Include="SyntaxTree\IfStatements\IfStatement.cs" />
     <Compile Include="Preprocessor\PreprocessorServices.cs" />
-    <Compile Include="Parser.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="CompilerServices.cs" />
     <Compile Include="EmitServices.cs" />
@@ -87,7 +87,10 @@
     <Compile Include="IL\ILGoto.cs" />
     <Compile Include="IL\ILDummy.cs" />
     <Compile Include="SpecializerServices.cs" />
-    <Compile Include="PostprocessingServices.cs" />
+    <Compile Include="Postprocessor\PostprocessingServices.cs" />
+    <Compile Include="Postprocessor\L1ExpressionParser.cs" />
+    <Compile Include="L1Parser.cs" />
+    <Compile Include="Postprocessor\L1ExpressionParserProperties.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -104,9 +107,11 @@
     <Folder Include="Environment\" />
     <Folder Include="IL\" />
     <Folder Include="Tests\" />
+    <Folder Include="Postprocessor\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Parser.y" />
     <None Include="Scanner.lex" />
+    <None Include="Postprocessor\L1ExpressionParser.y" />
+    <None Include="L1Parser.y" />
   </ItemGroup>
 </Project>

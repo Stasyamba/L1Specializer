@@ -384,7 +384,7 @@ namespace L1Specializer
 				
 				//Generate signature
 				
-				resultProgram.Append("* Specialization of function ").Append(generatedName).Append(" with parameters:").AppendLine();
+				resultProgram.Append("* Specialization of function ").Append(spec.Function.Name).Append(" with parameters:").AppendLine();
 				foreach (var kvp in spec.SpecializationRules) {
 					resultProgram.Append("*\t").Append(kvp.Key).Append(" = ");
 					if (kvp.Value == Dynamic.Value)
@@ -452,7 +452,8 @@ namespace L1Specializer
 				
 				//Postprocess
 				
-				spec.Source = PostprocessingServices.RemoveDummyVariables(spec.Source);
+				spec.Source = L1Specializer.Postprocessor.PostprocessingServices.RemoveDummyVariables(spec.Source);
+				
 				
 				//Append source
 				

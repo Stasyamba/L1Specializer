@@ -1,0 +1,48 @@
+/*
+=============================================================================
+NFSA Summary for input file <ExpressionScanner.lex>
+=============================================================================
+Number of Start Conditions = 1
+Start condition INITIAL:
+  number of patterns = 42, number of nfsa states = 165, accept states = 42
+=============================================================================
+GPLEX: NFSA built.   23 msec
+=============================================================================
+GPLEX: DFSA built.   33 msec
+=============================================================================
+GPLEX: DFSA minimized.   21 msec
+=============================================================================
+GPLEX: Shortest strings found.    2 msec
+=============================================================================
+DFSA Summary
+=============================================================================
+Number of dfsa instances = 1
+Start condition INITIAL:
+  number of dfsa states = 101, number of accept states = 92
+=============================================================================
+GPLEX: C# file emitted.   41 msec
+=============================================================================
+GPLEX Summary
+=============================================================================
+Total number of states = 87, total accept states = 79, backup states = 5
+Original state number was 102, minimized machine has 87 states
+Nextstate table compression was 81,87%, 4 038 entries Vs 22 272
+
+Backup state report --- 
+In <0>, after "\t" automaton could accept "(" "|\t|\n|\r\n)*" in state 3
+--- after ''\r'' automaton is in a non-accept state and might need to backup
+
+In <0>, after "\"" automaton could accept "." in state 5
+--- after ''\0'' automaton is in a non-accept state and might need to backup
+
+In <0>, after "#" automaton could accept "." in state 6
+--- after ''{'' automaton is in a non-accept state and might need to backup
+
+In <0>, after "'" automaton could accept "." in state 8
+--- after ''\0'' automaton is in a non-accept state and might need to backup
+
+In <0>, after "{" automaton could accept "." in state 36
+--- after ''0'' automaton is in a non-accept state and might need to backup
+
+=============================================================================
+ */

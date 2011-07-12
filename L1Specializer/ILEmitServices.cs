@@ -707,6 +707,8 @@ namespace L1Specializer
 					var leftOp = _EmitExpression(expr.LeftNode, il);
 					var ilExpr = new ILExpression();
 					ilExpr.Type = ILExpressionType.Alloc;
+					ilExpr.OriginalType = expr.ResultType;
+		
 					ilExpr.LeftNode = _constructVariableAccess(leftOp);
 					var resultVariable = GetVariableName();
 					var resultExpr = _constructAssignExpression(resultVariable, ilExpr);

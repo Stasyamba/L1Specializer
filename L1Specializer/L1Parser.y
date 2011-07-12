@@ -1,5 +1,7 @@
 %namespace L1Specializer
 
+%parsertype L1Parser
+
 %using L1Specializer.SyntaxTree
 %using L1Specializer.SyntaxTree.IfStatements
 %using L1Specializer.Metadata

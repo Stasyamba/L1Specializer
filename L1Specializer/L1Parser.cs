@@ -4,9 +4,9 @@
 
 // GPPG version 1.3.1.136 (2008-11-11)
 // Machine:  macbook-pro-stas.local
-// DateTime: 22.12.2010 22:16:58
+// DateTime: 03.06.2011 0:09:18
 // UserName: Stas
-// Input file <Parser.y>
+// Input file <L1Parser.y>
 
 // options: no-lines gplex
 
@@ -48,7 +48,7 @@ public abstract class ScanBase : IScanner<ValueType,LexLocation> {
   protected virtual bool yywrap() { return true; }
 }
 
-public class Parser: ShiftReduceParser<ValueType, LexLocation>
+public class L1Parser: ShiftReduceParser<ValueType, LexLocation>
 {
     private Dictionary<int, string> aliasses = null;
 

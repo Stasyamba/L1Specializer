@@ -1,11 +1,32 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.IO;
 
-namespace L1Specializer
+using L1Specializer.SyntaxTree;
+
+namespace L1Specializer.Postprocessor
 {
 	public static class PostprocessingServices
 	{
+		
+		public static string ReduceExpression(string expressionString) {
+			byte[] buff = Encoding.ASCII.GetBytes(expressionString);
+            MemoryStream stream = new MemoryStream(buff);
+			
+			var scanner = new Scanner(stream);
+			var parser = new L1ExpressionParser();
+			parser.scanner = scanner;
+			
+			bool b = parser.Parse();
+			if (b == false) {
+				return expressionString;
+			}
+			
+			Expression expr = parser.ParsedExpression;
+					
+			return expr.ToString();
+		}
 		
 		public static StringBuilder RemoveDummyVariables(StringBuilder functionSource) {
 			
@@ -46,6 +67,22 @@ namespace L1Specializer
 				}
 			} while (changed);
 			
+			for (int i = 0; i < ls.Count; ++i) {
+				string line = ls[i];
+				if (line.StartsWith("L_") || line.StartsWith("\tint ") ||
+				    line.StartsWith("\tbool ") || line.StartsWith("0") || line.StartsWith("*")) { continue; }
+				
+				//Remove tab and ;
+				line = line.Substring(1, line.Length - 2);
+					
+				if (line.StartsWith("return ")) {
+					line = "\treturn " + ReduceExpression(line.Substring("return ".Length)) + ";";
+				} else {
+					line = "\t" + ReduceExpression(line) + ";";
+				}
+				ls[i] = line;
+			}
+			
 			
 			return new StringBuilder(String.Join("\n", ls)).AppendLine();
 		}
@@ -81,13 +118,15 @@ namespace L1Specializer
 			string varName = pars[0];
 			string varVal = pars[1].Substring(0, pars[1].Length - 1);
 		
-			if (lineOne.Contains(varName)) {
-				lineOne = lineOne.Replace(varName, "(" + varVal + ")");
+			if (lineOne.Substring("\treturn ".Length).Contains(varName)) {
+				lineOne = "\treturn " + lineOne.Substring("\treturn ".Length).Replace(varName, "(" + varVal + ")");
 				return lineOne;
 			}
 			
 			return string.Empty;
 		}
+		
+		
 		
 	}
 }

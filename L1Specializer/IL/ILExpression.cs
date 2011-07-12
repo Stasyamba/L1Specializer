@@ -368,8 +368,21 @@ namespace L1Specializer.IL
 			if (Type == ILExpressionType.Alloc)
 			{
 				object left = LeftNode.Eval(state);
-				if (left != Dynamic.Value)
-					return new object[(int)left];
+				if (left != Dynamic.Value) {
+					int size = (int)left;
+					object[] r = new object[size];
+					if (OriginalType.NestedType == VariableType.IntType) {
+						for (int i = 0; i < size; ++i) {
+							r[i] = 0;
+						}
+					}
+					if (OriginalType.NestedType == VariableType.BoolType) {
+						for (int i = 0; i < size; ++i) {
+							r[i] = false;
+						}
+					}
+					return r;
+				}
 				else
 					return Dynamic.Value;
 			}

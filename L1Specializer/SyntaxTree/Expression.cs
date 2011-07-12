@@ -595,6 +595,198 @@ namespace L1Specializer.SyntaxTree
         }
 
         #endregion
+		
+		#region Ovveride object methods
+		
+		public override string ToString ()
+		{
+			if (IsLeaf) {
+				if (LeafType == ExpressionLeafType.FunctionCall) {
+					StringBuilder sb = new StringBuilder();
+					sb.Append(Value).Append("(");
+					int i = 0;
+					foreach (var argExpr in VAList) {
+						if (i++ != 0) { sb.Append(", "); }
+						sb.Append(argExpr.ToString());
+					}
+					sb.Append(")");
+					return sb.ToString();
+				} else if (LeafType == ExpressionLeafType.ArrayLength) {
+					return "ArrayLength(" + LeftNode.ToString() + ")";
+				} else if (LeafType == ExpressionLeafType.VariableAccess) {
+					return (string)Value;
+				} else if (LeafType == ExpressionLeafType.Constant) {
+					return m_renderConst(this);
+				} else {
+					throw new InvalidOperationException("Not supproted leaf type in ToString()");
+				}
+			}
+			else {
+				
+				//9
+				if (OpType == OperationType.UMinus) {
+					return "-" + m_getPreparedString(OpType, LeftNode);
+				} 
+				
+				//8
+				if (OpType == OperationType.UNot) {
+					return "not " + m_getPreparedString(OpType, LeftNode);
+				}
+				
+				//7
+				if (OpType == OperationType.ArrayAccess) {
+					return m_getPreparedString(OpType, LeftNode) + "[" + RightNode.ToString() + "]";
+				}
+				
+				//6
+				if (OpType == OperationType.Power) {
+					return m_getPreparedString(OpType, LeftNode) + " ** " + m_getPreparedString(OpType, RightNode);
+				}
+				
+				//5
+				if (OpType == OperationType.Mult) {
+					return m_getPreparedString(OpType, LeftNode) + " * " + m_getPreparedString(OpType, RightNode);
+				}
+				if (OpType == OperationType.Div) {
+					return m_getPreparedString(OpType, LeftNode) + " / " + m_getPreparedString(OpType, RightNode);
+				}			
+				if (OpType == OperationType.Mod) {
+					return m_getPreparedString(OpType, LeftNode) + " mod " + m_getPreparedString(OpType, RightNode);
+				}		
+				
+				//4
+				if (OpType == OperationType.Plus) {
+					return m_getPreparedString(OpType, LeftNode) + " + " + m_getPreparedString(OpType, RightNode);
+				}
+				if (OpType == OperationType.Minus) {
+					return m_getPreparedString(OpType, LeftNode) + " - " + m_getPreparedString(OpType, RightNode);
+				}
+				
+				//3
+				if (OpType == OperationType.Equals) {
+					return m_getPreparedString(OpType, LeftNode) + " = " + m_getPreparedString(OpType, RightNode);
+				}
+				if (OpType == OperationType.NotEquals) {
+					return m_getPreparedString(OpType, LeftNode) + " <> " + m_getPreparedString(OpType, RightNode);
+				}			
+				if (OpType == OperationType.Gr) {
+					return m_getPreparedString(OpType, LeftNode) + " > " + m_getPreparedString(OpType, RightNode);
+				}
+				if (OpType == OperationType.Greq) {
+					return m_getPreparedString(OpType, LeftNode) + " >= " + m_getPreparedString(OpType, RightNode);
+				}
+				if (OpType == OperationType.Le) {
+					return m_getPreparedString(OpType, LeftNode) + " < " + m_getPreparedString(OpType, RightNode);
+				}			
+				if (OpType == OperationType.Leeq) {
+					return m_getPreparedString(OpType, LeftNode) + " <= " + m_getPreparedString(OpType, RightNode);
+				}
+				
+				//2
+				if (OpType == OperationType.And) {
+					return m_getPreparedString(OpType, LeftNode) + " and " + m_getPreparedString(OpType, RightNode);
+				}
+				
+				//1
+				if (OpType == OperationType.Xor) {
+					return m_getPreparedString(OpType, LeftNode) + " xor " + m_getPreparedString(OpType, RightNode);
+				}
+				if (OpType == OperationType.Or) {
+					return m_getPreparedString(OpType, LeftNode) + " or " + m_getPreparedString(OpType, RightNode);
+				}
+				
+				//0
+				if (OpType == OperationType.Assign) {
+					return m_getPreparedString(OpType, LeftNode) + " := " + m_getPreparedString(OpType, RightNode);
+				}
+			}
+			
+			
+			throw new InvalidOperationException("Bad Expression.ToString() situation =(");
+		}
+		
+		#endregion
+		
+		#region Custom methods
+		
+		private static string m_renderConst(Expression expr) {
+			if (expr.ResultType == VariableType.IntType) {
+				return Convert.ToString(expr.IntValue);
+			}
+			if (expr.ResultType == VariableType.BoolType) {
+				if (expr.BoolValue) {
+					return "T";
+				} else {
+					return "F";
+				}
+			}
+			if (expr.ResultType == VariableType.NullType) {
+				return "NULL";
+			}
+			if (expr.ResultType.Equals(VariableType.StrType)) {
+				return "\"" + expr.Value.ToString() + "\"";
+			}
+			//TODO: Add array constants
+			return "<<CONST>>";
+		}
+		
+		private static string m_getPreparedString(OperationType opType, Expression expr) {
+			if (m_greaterPriority(opType, expr))
+				return "(" + expr.ToString() + ")";
+			else
+				return expr.ToString();
+		}
+		
+		//Prior(type) > Prior(subExpression.type), return false is subExpression is LEAF
+		private static bool m_greaterPriority(OperationType type, Expression subExpression) {
+			if (subExpression.IsLeaf) {
+				return false;
+			} else {
+				int priorType = m_getPriority(type);
+				int priorExpr = m_getPriority(subExpression.OpType);
+				return priorType > priorExpr;
+			}
+		}
+		
+		private static int m_getPriority(OperationType opType) {
+			if (opType == OperationType.Assign) { return 0; }
+			
+			if (opType == OperationType.Or || opType == OperationType.Xor) { return 1; }
+			
+			if (opType == OperationType.And) { return 2; }
+			
+			if (opType == OperationType.Equals || opType == OperationType.NotEquals ||
+			    opType == OperationType.Gr || opType == OperationType.Greq ||
+			    opType == OperationType.Le || opType == OperationType.Leeq) { return 3; }
+			
+			if (opType == OperationType.Plus || opType == OperationType.Minus) { return 4; }
+			
+			if (opType == OperationType.Mult || opType == OperationType.Div ||
+			    opType == OperationType.Mod) { return 5; }
+			
+			if (opType == OperationType.Power) { return 6; }
+			
+			if (opType == OperationType.ArrayAccess) { return 7; }
+			
+			if (opType == OperationType.UNot) { return 8; }		
+			
+			if (opType == OperationType.UMinus) { return 9; };
+			
+			return 100;
+		}
+		
+		#endregion
+		
+//		%right ASSIGN
+//		%left OR XOR
+//		%left AND
+//		%left EQ NEQ GR GREQ LE LEEQ
+//		%left PLUS MINUS
+//		%left MULT DIV MOD
+//		%right POWER
+//		%right LAP
+//		%nonassoc NOT
+//		%nonassoc UMINUS
 
     }
 }

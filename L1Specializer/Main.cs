@@ -110,7 +110,7 @@ namespace L1Specializer
 				return;
 			}
             Scanner scan = new Scanner(newFs);
-            Parser p = new Parser(); 
+            L1Parser p = new L1Parser(); 
             p.scanner = scan;
             //p.Trace = true;
 			
